@@ -1,0 +1,60 @@
+# --- Sensitive: invoice data ---
+# These contain customer addresses, account numbers, financial detail.
+# Keep them on disk, but never push to GitHub.
+data/raw/**
+!data/raw/.gitkeep
+!data/raw/README.md
+
+# --- Generated outputs (recomputable from code + data) ---
+outputs/workbooks/*.xlsx
+outputs/exports/
+!outputs/workbooks/.gitkeep
+
+# --- The bundled HTML with data baked in ---
+# The TEMPLATE version (without bundled data) is in code/dashboard/.
+# A locally-generated bundle for daily use sits in Claude Files/, not here.
+code/dashboard/UPS_Invoice_Analyzer.bundled.html
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+env/
+
+# --- Node (if we add a build step later) ---
+node_modules/
+package-lock.json
+
+# --- IDE / editor ---
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# --- OS junk ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Secrets ---
+.env
+.env.local
+*.pem
+*.key
+secrets.json
+
+# --- Logs ---
+*.log
+logs/
+
+# --- Claude session files ---
+*.b64
+*.b64.*
+bundled_charges.json

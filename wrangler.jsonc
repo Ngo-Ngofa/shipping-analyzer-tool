@@ -1,0 +1,47 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "shipping-analyzer",
+  "compatibility_date": "2026-05-08",
+  "main": "src/worker.js",
+  // The dashboard HTML and sibling assets live in code/dashboard/.
+  // Worker handles /api/* routes; everything else falls through to static assets.
+  "assets": {
+    "directory": "./code/dashboard",
+    "binding": "ASSETS",
+    // run_worker_first: true ensures /api/* hits the Worker BEFORE Cloudflare's
+    // asset router intercepts it (otherwise /api/health etc. would 404 to index.html).
+    "run_worker_first": true
+  },
+  // Shared key-value storage (M5 phase 2): charges and revenue stores.
+  "kv_namespaces": [
+    {
+      "binding": "CHARGES_KV",
+      "id": "REPLACE_WITH_YOUR_KV_NAMESPACE_ID"
+    }
+  ],
+  // Cron triggers — M6 Phase 3. Nightly BC->BQ sync at 06:00 UTC (07:00 BST / 06:00 GMT).
+  // Cloudflare invokes the Worker's `scheduled` handler, which calls syncFromBq() and
+  // additively merges new BC revenue rows into the revenue_v1 KV. View logs via:
+  //   wrangler tail
+  // and look for "[scheduled sync]" entries.
+  "triggers": {
+    "crons": ["0 6 * * *"]
+  },
+  // AUTH_HASH = SHA-256 of the team password. The password itself never reaches
+  // the server or sits in the repo; knowing the hash is equivalent to knowing the password.
+  //
+  // BQ_SHEET_URL = published-as-CSV URL of the Google Sheet that's Connected to the BC->BQ
+  // Posted Sales Invoice Line view. Worker POST /api/sync-bq fetches and merges into revenue_v1 KV.
+  //
+  // VLE_SHEET_URL = published-as-CSV URL of the Google Sheet that's Connected to the BC
+  // Vendor Ledger Entry view (UPS/DHL accounts payable). Worker POST /api/sync-vle fetches
+  // and REPLACES vendor_ledger_v1 KV (replace not additive — ledger state changes when
+  // invoices get paid; we want the current snapshot, not historical accumulation).
+  //
+  // Treat both URLs as semi-sensitive — keep out of public chat/email.
+  "vars": {
+    "AUTH_HASH": "REPLACE_WITH_SHA256_OF_YOUR_TEAM_PASSWORD",
+    "BQ_SHEET_URL": "REPLACE_WITH_YOUR_PUBLISHED_GOOGLE_SHEET_CSV_URL_FOR_SALES",
+    "VLE_SHEET_URL": "REPLACE_WITH_YOUR_PUBLISHED_GOOGLE_SHEET_CSV_URL_FOR_VENDOR_LEDGER"
+  }
+}
