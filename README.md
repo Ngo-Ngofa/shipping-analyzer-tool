@@ -1,5 +1,7 @@
 # Shipping Invoice Analyzer
 
+**👉 [Live demo](https://ngongofa-81.github.io/shipping-analyzer-tool/)** — interactive dashboard with sample data, runs in your browser, no setup.
+
 A multi-carrier shipping invoice analytics dashboard, hosted on Cloudflare Workers, with automated nightly data sync from an ERP system via BigQuery, rate-card variance detection across two carriers, and a single-page interactive HTML dashboard.
 
 **This repository is a sanitized portfolio version.** The original was built for an internal finance team. All identifying data — company name, account numbers, passwords, customer references — has been replaced with placeholders. See **Setup** below to deploy your own.
